@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración Jaucer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { padding-top: 2rem; }
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Login Screen */
+        #loginScreen {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        
+        #loginScreen h2 { margin-bottom: 1.5rem; }
+        
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-color);
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        /* Dashboard */
+        #adminDashboard {
+            display: none;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-danger {
+            background: var(--accent-color);
+        }
+        
+        .panel {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .products-table th, .products-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .products-table th {
+            color: var(--text-muted);
+        }
+        
+        .small-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        
+        <!-- Pantalla de Login -->
+        <div id="loginScreen">
+            <h2>Acceso Administrador</h2>
+            <div class="form-group">
+                <input type="password" id="adminPassword" placeholder="Contraseña">
+            </div>
+            <button class="btn" onclick="login()" style="width: 100%;">Entrar</button>
+            <p id="loginError" style="color: var(--accent-color); margin-top: 1rem; display: none;">Contraseña incorrecta</p>
+            <br><br>
+            <a href="/" style="color: var(--text-muted);">Volver a la tienda</a>
+        </div>
+        
+        <!-- Panel de Administración -->
+        <div id="adminDashboard">
+            <div class="dashboard-header">
+                <h2>Panel Jaucer</h2>
+                <div>
+                    <button class="btn" onclick="logout()" style="background: transparent; border: 1px solid var(--text-muted);">Cerrar Sesión</button>
+                    <a href="/" class="btn" style="text-decoration: none; display: inline-block; margin-left: 10px;">Ver Tienda</a>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>Agregar Nuevo Producto</h3>
+                <br>
+                <form id="addProductForm" onsubmit="addProduct(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" id="pTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio ($)</label>
+                            <input type="number" step="0.01" id="pPrice" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="pCategory">
+                                <option value="electronics">Electrónica</option>
+                                <option value="home">Hogar</option>
+                                <option value="clothing">Ropa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Condición</label>
+                            <select id="pCondition">
+                                <option value="Como Nuevo">Como Nuevo</option>
+                                <option value="Excelente">Excelente</option>
+                                <option value="Buen Estado">Buen Estado</option>
+                                <option value="Usado">Usado</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>URL de Imagen</label>
+                            <input type="url" id="pImage" placeholder="https://..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="addBtn">Guardar Producto</button>
+                </form>
+            </div>
+            
+            <div class="panel">
+                <h3>Mis Productos</h3>
+                <br>
+                <div style="overflow-x: auto;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Título</th>
+                                <th>Precio</th>
+                                <th>Categoría</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductsList">
+                            <!-- JS inyectará los productos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
