@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaucer | Detalles del Producto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .product-details-section {
+            padding: 120px 5% 50px;
+            min-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-detail-card {
+            background: var(--surface-color);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-detail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            min-height: 400px;
+        }
+
+        .product-detail-info {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-category {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .detail-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-condition {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-add-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .detail-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        #loadingState, #errorState {
+            text-align: center;
+            width: 100%;
+            padding: 5rem;
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-card {
+                grid-template-columns: 1fr;
+            }
+            .product-detail-info {
+                padding: 2rem;
+            }
+            .detail-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <h1>Jaucer<span>.</span></h1>
+            </a>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="index.html#productos">Catálogo</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="cart-count">0</span>
+        </div>
+    </header>
+
+    <!-- Product Details Section -->
+    <section class="product-details-section">
+        
+        <div id="loadingState">
+            <i class="fa-solid fa-spinner fa-spin fa-3x" style="color: var(--primary-color);"></i>
+            <p style="margin-top: 1rem;">Cargando detalles...</p>
+        </div>
+
+        <div id="errorState" style="display: none;">
+            <i class="fa-solid fa-circle-exclamation fa-3x" style="color: var(--accent-color);"></i>
+            <h2 style="margin-top: 1rem;">Producto no encontrado</h2>
+            <p style="margin-top: 1rem; color: var(--text-muted);">El artículo que buscas no existe o ha sido eliminado.</p>
+            <br>
+            <a href="index.html" class="detail-add-btn" style="text-decoration: none; display: inline-block; width: auto; padding: 0.8rem 2rem;">Volver a la tienda</a>
+        </div>
+
+        <div class="product-detail-card" id="productDetailCard" style="display: none;">
+            <div class="image-col">
+                <img src="" alt="Producto" class="product-detail-image" id="detailImage">
+            </div>
+            <div class="product-detail-info">
+                <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al catálogo</a>
+                <span class="detail-category" id="detailCategory">Categoría</span>
+                <h1 class="detail-title" id="detailTitle">Título del Producto</h1>
+                <div class="detail-price" id="detailPrice">$0.00</div>
+                <div>
+                    <span class="detail-condition"><i class="fa-solid fa-tag"></i> Condición: <span id="detailCondition">Usado</span></span>
+                </div>
+                <button class="detail-add-btn" id="detailAddBtn">
+                    Añadir al Carrito
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="brand-info">
+                <h2>Jaucer<span>.</span></h2>
+                <p>Tu marketplace premium de segunda mano.</p>
+            </div>
+            <div class="contact-info">
+                <h4>Contacto</h4>
+                <p><i class="fa-solid fa-envelope"></i> hola@jaucer.com</p>
+                <p><i class="fa-solid fa-phone"></i> +1 234 567 890</p>
+                <p style="margin-top: 10px;"><a href="admin.html" style="color: var(--text-muted); text-decoration: none;"><i class="fa-solid fa-lock"></i> Acceso Admin</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Jaucer. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="product.js"></script>
+</body>
+</html>

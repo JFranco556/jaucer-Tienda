@@ -49,6 +49,21 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
+// 1.5 Obtener un producto por ID (Público)
+app.get('/api/products/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const product = await productsCollection.findOne({ _id: new ObjectId(id) });
+        if (product) {
+            res.json(product);
+        } else {
+            res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener el producto' });
+    }
+});
+
 // 2. Agregar un nuevo producto (Protegido)
 app.post('/api/products', requireAuth, async (req, res) => {
     try {

@@ -50,6 +50,13 @@ function renderProducts(productsToRender) {
             </div>
         `;
         
+        productEl.style.cursor = 'pointer';
+        productEl.onclick = (e) => {
+            if(!e.target.classList.contains('add-to-cart-btn')) {
+                window.location.href = `product.html?id=${product._id}`;
+            }
+        };
+        
         productsGrid.appendChild(productEl);
     });
 }
