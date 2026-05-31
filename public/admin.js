@@ -90,12 +90,22 @@ async function addProduct(event) {
     btn.textContent = "Guardando...";
     btn.disabled = true;
     
+    const specNames = document.querySelectorAll('.spec-name');
+    const specValues = document.querySelectorAll('.spec-value');
+    const specs = [];
+    for (let i = 0; i < specNames.length; i++) {
+        if (specNames[i].value && specValues[i].value) {
+            specs.push({ name: specNames[i].value, value: specValues[i].value });
+        }
+    }
+
     const newProduct = {
         title: document.getElementById('pTitle').value,
         price: document.getElementById('pPrice').value,
         category: document.getElementById('pCategory').value,
         condition: document.getElementById('pCondition').value,
-        image: document.getElementById('pImage').value
+        image: document.getElementById('pImage').value,
+        specs: specs
     };
     
     try {
@@ -139,4 +149,18 @@ async function deleteProduct(id) {
     } catch (error) {
         alert("Error de red");
     }
+}
+
+function addSpecField() {
+    const container = document.getElementById('specsContainer');
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '0.5rem';
+    
+    row.innerHTML = `
+        <input type="text" class="spec-name" placeholder="Ej. Material" style="flex: 1; padding: 0.8rem; background: var(--bg-color); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+        <input type="text" class="spec-value" placeholder="Ej. Oxford 1680D" style="flex: 2; padding: 0.8rem; background: var(--bg-color); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="padding: 0 1rem;"><i class="fa-solid fa-trash"></i></button>
+    `;
+    container.appendChild(row);
 }

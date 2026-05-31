@@ -67,8 +67,8 @@ app.get('/api/products/:id', async (req, res) => {
 // 2. Agregar un nuevo producto (Protegido)
 app.post('/api/products', requireAuth, async (req, res) => {
     try {
-        const { title, category, price, image, condition } = req.body;
-        const newProduct = { title, category, price: Number(price), image, condition, createdAt: new Date() };
+        const { title, category, price, image, condition, specs } = req.body;
+        const newProduct = { title, category, price: Number(price), image, condition, specs: specs || [], createdAt: new Date() };
         const result = await productsCollection.insertOne(newProduct);
         res.status(201).json({ message: 'Producto agregado', id: result.insertedId });
     } catch (error) {

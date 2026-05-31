@@ -1,209 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jaucer | Detalles del Producto</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .product-details-section {
-            padding: 120px 5% 50px;
-            min-height: 80vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .product-detail-card {
-            background: var(--surface-color);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            max-width: 1000px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .product-detail-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            min-height: 400px;
-        }
-
-        .product-detail-info {
-            padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .detail-category {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .detail-title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: white;
-            line-height: 1.2;
-        }
-
-        .detail-price {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-condition {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-
-        .detail-add-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .detail-add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
-        }
-
-        .back-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: white;
-        }
-
-        #loadingState, #errorState {
-            text-align: center;
-            width: 100%;
-            padding: 5rem;
-        }
-
-        @media (max-width: 768px) {
-            .product-detail-card {
-                grid-template-columns: 1fr;
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detalles de Producto - Jaucer</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#131b2e",
+                    "surface-container-lowest": "#ffffff",
+                    "indigo-vibrant": "#6366F1",
+                    "surface": "#f7f9fb",
+                    "slate-deep": "#0F172A",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-container-low": "#f2f4f6",
+                    "border-subtle": "#E2E8F0",
+                    "pink-accent": "#EC4899"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "unit": "8px",
+                    "spec-row-padding": "12px 16px",
+                    "gutter": "24px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Outfit"],
+                    "body-lg": ["Outfit"],
+                    "label-md": ["Outfit"],
+                    "title-lg": ["Outfit"],
+                    "display-lg": ["Outfit"],
+                    "body-md": ["Outfit"]
             }
-            .product-detail-info {
-                padding: 2rem;
-            }
-            .detail-title {
-                font-size: 2rem;
-            }
+          }
         }
+      }
+    </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+        body { font-family: 'Outfit', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-surface text-slate-deep antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface text-slate-deep w-full sticky top-0 border-b border-border-subtle transition-all duration-200 ease-in-out z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-bold text-2xl">
+    <a href="index.html">Jaucer<span class="text-indigo-vibrant">.</span></a>
+</div>
+<ul class="hidden md:flex gap-8 items-center">
+<li><a class="text-slate-deep hover:text-indigo-vibrant transition-all" href="index.html">Inicio</a></li>
+<li><a class="text-slate-deep hover:text-indigo-vibrant transition-all" href="index.html#productos">Catálogo</a></li>
+</ul>
+<div class="flex items-center gap-4">
+    <div class="relative cursor-pointer">
+        <span class="material-symbols-outlined text-3xl">shopping_cart</span>
+        <span class="cart-count absolute -top-2 -right-2 bg-pink-accent text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">0</span>
+    </div>
+</div>
+</div>
+</nav>
 
-    <!-- Header Navigation -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit;">
-                <h1>Jaucer<span>.</span></h1>
-            </a>
-        </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="index.html#productos">Catálogo</a></li>
-            </ul>
-        </nav>
-        <div class="cart-icon">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-count">0</span>
-        </div>
-    </header>
+<!-- Main Content Canvas -->
+<main class="flex-grow">
+    
+    <div id="loadingState" class="text-center py-20">
+        <span class="material-symbols-outlined animate-spin text-5xl text-indigo-vibrant">progress_activity</span>
+        <p class="mt-4 text-slate-deep">Cargando detalles...</p>
+    </div>
 
-    <!-- Product Details Section -->
-    <section class="product-details-section">
+    <div id="errorState" class="text-center py-20" style="display: none;">
+        <span class="material-symbols-outlined text-5xl text-red-500">error</span>
+        <h2 class="text-2xl mt-4 text-slate-deep">Producto no encontrado</h2>
+        <a href="index.html" class="inline-block mt-4 bg-indigo-vibrant text-white px-6 py-2 rounded-lg">Volver al catálogo</a>
+    </div>
+
+    <!-- Product Content (Hidden initially) -->
+    <div id="productDetailContainer" style="display: none;">
         
-        <div id="loadingState">
-            <i class="fa-solid fa-spinner fa-spin fa-3x" style="color: var(--primary-color);"></i>
-            <p style="margin-top: 1rem;">Cargando detalles...</p>
-        </div>
-
-        <div id="errorState" style="display: none;">
-            <i class="fa-solid fa-circle-exclamation fa-3x" style="color: var(--accent-color);"></i>
-            <h2 style="margin-top: 1rem;">Producto no encontrado</h2>
-            <p style="margin-top: 1rem; color: var(--text-muted);">El artículo que buscas no existe o ha sido eliminado.</p>
-            <br>
-            <a href="index.html" class="detail-add-btn" style="text-decoration: none; display: inline-block; width: auto; padding: 0.8rem 2rem;">Volver a la tienda</a>
-        </div>
-
-        <div class="product-detail-card" id="productDetailCard" style="display: none;">
-            <div class="image-col">
-                <img src="" alt="Producto" class="product-detail-image" id="detailImage">
-            </div>
-            <div class="product-detail-info">
-                <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al catálogo</a>
-                <span class="detail-category" id="detailCategory">Categoría</span>
-                <h1 class="detail-title" id="detailTitle">Título del Producto</h1>
-                <div class="detail-price" id="detailPrice">$0.00</div>
-                <div>
-                    <span class="detail-condition"><i class="fa-solid fa-tag"></i> Condición: <span id="detailCondition">Usado</span></span>
+        <!-- Hero Section (Product Image & Basics) -->
+        <section class="pt-16 pb-12 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-border-subtle">
+                    <img id="detailImage" src="" alt="Producto" class="w-full h-auto object-cover max-h-[500px]" onerror="this.src='https://images.unsplash.com/photo-1555529771-835f59bfc50c?auto=format&fit=crop&w=600&q=80';">
                 </div>
-                <button class="detail-add-btn" id="detailAddBtn">
-                    Añadir al Carrito
-                </button>
-            </div>
-        </div>
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-vibrant bg-opacity-10 rounded-full mb-4">
+                        <span class="font-label-md text-label-md text-indigo-vibrant uppercase" id="detailCategory">Categoría</span>
+                    </div>
+                    <h1 class="font-display-lg text-4xl md:text-5xl text-slate-deep mb-4 font-bold" id="detailTitle">Título del Producto</h1>
+                    <p class="text-3xl font-bold text-slate-deep mb-6" id="detailPrice">$0.00</p>
+                    
+                    <div class="flex items-center gap-2 mb-8 text-slate-deep">
+                        <span class="material-symbols-outlined text-indigo-vibrant">verified</span>
+                        <span>Condición: <strong id="detailCondition">Usado</strong></span>
+                    </div>
 
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="brand-info">
-                <h2>Jaucer<span>.</span></h2>
-                <p>Tu marketplace premium de segunda mano.</p>
+                    <button id="detailAddBtn" class="bg-slate-deep text-white w-full py-4 rounded-xl text-lg font-bold hover:bg-indigo-vibrant transition-colors duration-300 shadow-md">
+                        Añadir al Carrito
+                    </button>
+                </div>
             </div>
-            <div class="contact-info">
-                <h4>Contacto</h4>
-                <p><i class="fa-solid fa-envelope"></i> hola@jaucer.com</p>
-                <p><i class="fa-solid fa-phone"></i> +1 234 567 890</p>
-                <p style="margin-top: 10px;"><a href="admin.html" style="color: var(--text-muted); text-decoration: none;"><i class="fa-solid fa-lock"></i> Acceso Admin</a></p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Jaucer. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+        </section>
 
-    <script src="product.js"></script>
+        <!-- Detailed Specifications Grid -->
+        <section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-24 mt-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+                <div class="lg:col-span-4 hidden lg:block">
+                    <div class="sticky top-32">
+                        <h2 class="text-3xl text-slate-deep mb-4 font-bold">Datos<br/>Técnicos</h2>
+                        <p class="text-slate-deep opacity-80 pr-8">
+                            Un desglose completo de las características de este producto.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 space-y-12">
+                    <!-- Dynamic Specs Group -->
+                    <div id="dynamicSpecsContainer">
+                        <h3 class="text-xl text-slate-deep mb-4 pb-2 border-b border-border-subtle uppercase tracking-wider text-sm font-semibold">Especificaciones</h3>
+                        <div id="specsList">
+                            <!-- Rows injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-surface-container text-slate-deep w-full mt-auto border-t border-border-subtle">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-8 max-w-container-max mx-auto">
+<div class="font-bold uppercase tracking-widest mb-4 md:mb-0">
+    JAUCER.
+</div>
+<ul class="flex flex-wrap justify-center gap-6 mb-4 md:mb-0">
+<li><a class="hover:text-indigo-vibrant underline opacity-80 hover:opacity-100 transition-opacity" href="admin.html">Acceso Admin</a></li>
+</ul>
+<div class="opacity-80">
+    © 2026 Jaucer. Todos los derechos reservados.
+</div>
+</div>
+</footer>
+
+<script src="product.js"></script>
 </body>
 </html>

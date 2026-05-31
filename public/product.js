@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderProductDetails(product) {
     // Hide loading, show card
     document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('productDetailCard').style.display = 'grid';
+    document.getElementById('productDetailContainer').style.display = 'block';
 
     // Populate data
     const imgEl = document.getElementById('detailImage');
@@ -64,11 +64,29 @@ function renderProductDetails(product) {
     document.getElementById('detailPrice').textContent = `$${product.price.toFixed(2)}`;
     document.getElementById('detailCondition').textContent = product.condition || 'Usado';
     document.getElementById('detailCategory').textContent = getCategoryName(product.category);
+
+    // Populate dynamic specs
+    const specsList = document.getElementById('specsList');
+    specsList.innerHTML = '';
+    
+    if (product.specs && product.specs.length > 0) {
+        product.specs.forEach(spec => {
+            const row = document.createElement('div');
+            row.className = 'flex flex-col md:flex-row border-b border-border-subtle hover:bg-surface-container-low transition-colors group';
+            row.innerHTML = `
+                <div class="md:w-[30%] py-spec-row-padding font-semibold text-slate-deep opacity-80 group-hover:text-indigo-vibrant transition-colors">${spec.name}</div>
+                <div class="md:w-[70%] py-spec-row-padding text-slate-deep font-medium">${spec.value}</div>
+            `;
+            specsList.appendChild(row);
+        });
+    } else {
+        specsList.innerHTML = '<p class="text-slate-deep opacity-70 py-4">No hay especificaciones detalladas para este producto.</p>';
+    }
 }
 
 function showError() {
     document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('productDetailCard').style.display = 'none';
+    document.getElementById('productDetailContainer').style.display = 'none';
     document.getElementById('errorState').style.display = 'block';
 }
 
