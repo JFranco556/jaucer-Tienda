@@ -1,5 +1,5 @@
 // Lógica del Panel de Administrador
-let adminToken = localStorage.getItem('jaucer_admin_token');
+let adminToken = sessionStorage.getItem('jaucer_admin_token');
 
 const loginScreen = document.getElementById('loginScreen');
 const adminDashboard = document.getElementById('adminDashboard');
@@ -24,7 +24,7 @@ async function login() {
         const data = await res.json();
         if (data.success) {
             adminToken = data.token;
-            localStorage.setItem('jaucer_admin_token', adminToken);
+            sessionStorage.setItem('jaucer_admin_token', adminToken);
             showDashboard();
         } else {
             loginError.style.display = 'block';
@@ -35,7 +35,7 @@ async function login() {
 }
 
 function logout() {
-    localStorage.removeItem('jaucer_admin_token');
+    sessionStorage.removeItem('jaucer_admin_token');
     adminToken = null;
     document.getElementById('adminPassword').value = '';
     loginError.style.display = 'none';
