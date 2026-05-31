@@ -74,7 +74,7 @@ window.checkout = function () {
     if (cart.length === 0) return;
 
     // Número de WhatsApp del vendedor (Ajusta este número)
-    const phoneNumber = "942889318";
+    const phoneNumber = "51942889318";
 
     let message = `¡Hola! Quiero realizar el siguiente pedido:\n\n`;
     let total = 0;
