@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Sync cart count from localStorage if needed, or just initialize
-    // For now we just use a local variable like in app.js
-    let cartCount = 0;
-    const cartCountElement = document.querySelector('.cart-count');
+
 
     // Get ID from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -28,26 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showError();
     }
 
-    // Setup Add to Cart functionality
-    document.getElementById('detailAddBtn').addEventListener('click', (e) => {
-        cartCount++;
-        cartCountElement.textContent = cartCount;
-        
-        const btn = e.target;
-        const originalText = btn.textContent;
-        btn.textContent = "¡Añadido al Carrito!";
-        btn.style.background = "#10b981"; // success green
-        
-        // Animate cart icon
-        const cartIcon = document.querySelector('.cart-icon');
-        cartIcon.style.transform = "scale(1.3)";
-        
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.background = "var(--primary-color)";
-            cartIcon.style.transform = "scale(1)";
-        }, 1500);
-    });
+
 });
 
 function renderProductDetails(product) {
@@ -64,6 +42,21 @@ function renderProductDetails(product) {
     document.getElementById('detailPrice').textContent = `$${product.price.toFixed(2)}`;
     document.getElementById('detailCondition').textContent = product.condition || 'Usado';
     document.getElementById('detailCategory').textContent = getCategoryName(product.category);
+
+    // Setup Add to Cart functionality
+    const addBtn = document.getElementById('detailAddBtn');
+    addBtn.onclick = (e) => {
+        window.addToCartGlobal(product);
+        
+        const originalText = addBtn.textContent;
+        addBtn.textContent = "¡Añadido al Carrito!";
+        addBtn.style.background = "#10b981"; // success green
+        
+        setTimeout(() => {
+            addBtn.textContent = originalText;
+            addBtn.style.background = ""; // remove inline style to fallback to classes
+        }, 1500);
+    };
 
     // Populate dynamic specs
     const specsList = document.getElementById('specsList');

@@ -1,10 +1,10 @@
 let products = [];
-let cartCount = 0;
+
 
 // DOM Elements
 const productsGrid = document.getElementById('productsGrid');
 const filterBtns = document.querySelectorAll('.filter-btn');
-const cartCountElement = document.querySelector('.cart-count');
+
 const navbar = document.querySelector('.navbar');
 
 // Initialize
@@ -46,7 +46,7 @@ function renderProducts(productsToRender) {
                 <span class="product-category">${getCategoryName(product.category)}</span>
                 <h4 class="product-title">${product.title}</h4>
                 <div class="product-price">$${product.price.toFixed(2)}</div>
-                <button class="add-to-cart-btn" onclick="addToCart(event)">Añadir al Carrito</button>
+                <button class="add-to-cart-btn" onclick="addToCart(event, '${product._id}')">Añadir al Carrito</button>
             </div>
         `;
         
@@ -92,30 +92,25 @@ function setupFilters() {
 }
 
 // Add to Cart Interaction
-window.addToCart = function(event) {
-    // Prevent default button action if needed
+window.addToCart = function(event, productId) {
     event.preventDefault();
-    
-    cartCount++;
-    cartCountElement.textContent = cartCount;
-    
-    // Add simple animation
-    const btn = event.target;
-    const originalText = btn.textContent;
-    btn.textContent = "¡Añadido!";
-    btn.style.background = "var(--primary-color)";
-    btn.style.color = "white";
-    
-    // Animate cart icon
-    const cartIcon = document.querySelector('.cart-icon');
-    cartIcon.style.transform = "scale(1.3)";
-    
-    setTimeout(() => {
-        btn.textContent = originalText;
-        btn.style.background = "transparent";
-        btn.style.color = "var(--text-main)";
-        cartIcon.style.transform = "scale(1)";
-    }, 1500);
+    const product = products.find(p => p._id === productId);
+    if(product) {
+        window.addToCartGlobal(product);
+        
+        // Add simple animation
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = "¡Añadido!";
+        btn.style.background = "var(--primary-color)";
+        btn.style.color = "white";
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = "transparent";
+            btn.style.color = "var(--text-main)";
+        }, 1500);
+    }
 }
 
 // Navbar Scroll Effect

@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,13 +15,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Configuración de MongoDB
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
-let db, productsCollection;
+let db, productsCollection, usersCollection;
 
 async function connectDB() {
     try {
         await client.connect();
         db = client.db("JaucerDB");
         productsCollection = db.collection("products");
+        usersCollection = db.collection("users");
         console.log("Conectado exitosamente a MongoDB");
     } catch (error) {
         console.error("Error conectando a MongoDB:", error);
@@ -91,13 +94,75 @@ app.delete('/api/products/:id', requireAuth, async (req, res) => {
     }
 });
 
-// 4. Iniciar sesión (Verificar contraseña)
+// 4. Iniciar sesión admin (Verificar contraseña)
 app.post('/api/login', (req, res) => {
     const { password } = req.body;
     if (password === process.env.ADMIN_PASS) {
         res.json({ success: true, token: password }); // Usamos la contraseña como token simple
     } else {
         res.status(401).json({ success: false, error: 'Contraseña incorrecta' });
+    }
+});
+
+// 5. Registro de usuario regular
+app.post('/api/register', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        
+        // Check if user exists
+        const existingUser = await usersCollection.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'El email ya está registrado' });
+        }
+        
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        // Create user
+        const newUser = {
+            name,
+            email,
+            password: hashedPassword,
+            createdAt: new Date()
+        };
+        
+        const result = await usersCollection.insertOne(newUser);
+        
+        // Create JWT token
+        const token = jwt.sign({ id: result.insertedId, email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        
+        res.status(201).json({ message: 'Usuario creado', token, user: { name, email } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al registrar usuario' });
+    }
+});
+
+// 6. Login de usuario regular
+app.post('/api/user-login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Find user
+        const user = await usersCollection.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ error: 'Credenciales inválidas' });
+        }
+        
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Credenciales inválidas' });
+        }
+        
+        // Create JWT token
+        const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        
+        res.json({ message: 'Inicio de sesión exitoso', token, user: { name: user.name, email: user.email } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al iniciar sesión' });
     }
 });
 
