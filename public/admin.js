@@ -55,6 +55,14 @@ async function loadAdminProducts() {
         const products = await res.json();
         
         adminProductsList.innerHTML = '';
+        
+        if (!Array.isArray(products)) {
+            // It's likely an error object from the server
+            console.error("Error del servidor:", products);
+            adminProductsList.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--accent-color);">Error de base de datos. Revisa la consola del servidor.</td></tr>';
+            return; // No hacer logout, solo detener la ejecución
+        }
+        
         products.forEach(p => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -69,8 +77,10 @@ async function loadAdminProducts() {
             adminProductsList.appendChild(tr);
         });
     } catch (error) {
-        console.error("Error al cargar productos:", error);
-        if (adminToken) logout(); // Si falla, puede que haya expirado la sesión
+        console.error("Error de red o conexión al cargar productos:", error);
+        // Solo hacer logout si el error fue de autenticación, pero /api/products es público,
+        // así que no debería expulsar al admin por un error de red.
+        adminProductsList.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--accent-color);">Error de red al cargar productos.</td></tr>';
     }
 }
 
