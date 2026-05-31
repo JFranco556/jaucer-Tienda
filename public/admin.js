@@ -68,9 +68,11 @@ async function loadAdminProducts() {
             tr.innerHTML = `
                 <td><img src="${p.image}" class="small-img" onerror="this.src='https://images.unsplash.com/photo-1555529771-835f59bfc50c?auto=format&fit=crop&w=600&q=80';"></td>
                 <td>${p.title}</td>
-                <td>$${p.price.toFixed(2)}</td>
+                <td>S/. ${p.price.toFixed(2)}</td>
+                <td>${p.stock || 0}</td>
                 <td>${p.category}</td>
                 <td>
+                    <button class="btn btn-success" onclick="sellProduct('${p._id}')"><i class="fa-solid fa-cart-shopping"></i></button>
                     <button class="btn btn-danger" onclick="deleteProduct('${p._id}')"><i class="fa-solid fa-trash"></i></button>
                 </td>
             `;
@@ -99,12 +101,19 @@ async function addProduct(event) {
         }
     }
 
+    const title = document.getElementById('pTitle').value;
+    const price = document.getElementById('pPrice').value;
+    const stock = document.getElementById('pStock').value;
+    const category = document.getElementById('pCategory').value;
+    const image = document.getElementById('pImage').value;
+    const condition = document.getElementById('pCondition').value;
     const newProduct = {
-        title: document.getElementById('pTitle').value,
-        price: document.getElementById('pPrice').value,
-        category: document.getElementById('pCategory').value,
-        condition: document.getElementById('pCondition').value,
-        image: document.getElementById('pImage').value,
+        title,
+        price,
+        stock,
+        category,
+        condition,
+        image,
         specs: specs
     };
     
@@ -145,6 +154,26 @@ async function deleteProduct(id) {
             loadAdminProducts();
         } else {
             alert("No autorizado o error del servidor.");
+        }
+    } catch (error) {
+        alert("Error de red");
+    }
+}
+
+async function sellProduct(id) {
+    if (!confirm('¿Marcar este producto como VENDIDO? Desaparecerá del catálogo público y se guardará en el registro de ventas.')) return;
+    
+    try {
+        const res = await fetch(`/api/products/${id}/sell`, {
+            method: 'POST',
+            headers: { 'Authorization': adminToken }
+        });
+        
+        if (res.ok) {
+            alert('Venta registrada con éxito.');
+            loadAdminProducts();
+        } else {
+            alert("Error al procesar la venta.");
         }
     } catch (error) {
         alert("Error de red");

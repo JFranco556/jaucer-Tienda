@@ -45,7 +45,7 @@ function renderProducts(productsToRender) {
             <div class="product-info">
                 <span class="product-category">${getCategoryName(product.category)}</span>
                 <h4 class="product-title">${product.title}</h4>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <div class="product-price">S/. ${product.price.toFixed(2)}</div>
                 <button class="add-to-cart-btn" onclick="addToCart(event, '${product._id}')">Añadir al Carrito</button>
             </div>
         `;

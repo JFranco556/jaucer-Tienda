@@ -39,7 +39,7 @@ function renderProductDetails(product) {
     imgEl.onerror = () => { imgEl.src = 'https://images.unsplash.com/photo-1555529771-835f59bfc50c?auto=format&fit=crop&w=600&q=80'; };
     
     document.getElementById('detailTitle').textContent = product.title;
-    document.getElementById('detailPrice').textContent = `$${product.price.toFixed(2)}`;
+    document.getElementById('detailPrice').textContent = `S/. ${product.price.toFixed(2)}`;
     document.getElementById('detailCondition').textContent = product.condition || 'Usado';
     document.getElementById('detailCategory').textContent = getCategoryName(product.category);
 

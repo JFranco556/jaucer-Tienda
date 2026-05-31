@@ -14,9 +14,26 @@ function updateCartIconCount() {
 }
 
 // Expone addToCartGlobal para que app.js y product.js lo llamen
-window.addToCartGlobal = function (product) {
+window.addToCartGlobal = async function (product) {
     if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
         showAuthModal();
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('jaucer_user_token');
+        const res = await fetch(`/api/products/${product._id}/reserve`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ quantity: 1 })
+        });
+        
+        if (!res.ok) {
+            alert("No hay stock suficiente para añadir este producto.");
+            return;
+        }
+    } catch(err) {
+        console.error(err);
         return;
     }
 
@@ -32,28 +49,59 @@ window.addToCartGlobal = function (product) {
     const cartIcons = document.querySelectorAll('.cart-icon');
     cartIcons.forEach(icon => {
         icon.style.transform = "scale(1.3)";
-        setTimeout(() => icon.style.transform = "scale(1)", 300);
+        setTimeout(() => { icon.style.transform = "scale(1)"; }, 300);
     });
 };
 
-window.removeFromCart = function (productId) {
+window.removeFromCart = async function (productId) {
+    const item = cart.find(i => i._id === productId);
+    if (!item) return;
+    
+    try {
+        const token = localStorage.getItem('jaucer_user_token');
+        await fetch(`/api/products/${productId}/release`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ quantity: item.quantity })
+        });
+    } catch(e) { console.error(e); }
+    
     cart = cart.filter(item => item._id !== productId);
     saveCart();
+    renderCart();
+    updateCartIconCount();
 };
 
-window.updateQuantity = function (productId, action) {
+window.updateQuantity = async function (productId, action) {
     const item = cart.find(i => i._id === productId);
-    if (item) {
+    if (!item) return;
+    
+    try {
+        const token = localStorage.getItem('jaucer_user_token');
         if (action === 'increase') {
+            const res = await fetch(`/api/products/${productId}/reserve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ quantity: 1 })
+            });
+            if (!res.ok) { alert("Sin stock disponible"); return; }
             item.quantity += 1;
         } else if (action === 'decrease') {
+            await fetch(`/api/products/${productId}/release`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ quantity: 1 })
+            });
             item.quantity -= 1;
             if (item.quantity <= 0) {
                 cart = cart.filter(i => i._id !== productId);
             }
         }
-        saveCart();
-    }
+    } catch(e) { console.error(e); return; }
+    
+    saveCart();
+    renderCart();
+    updateCartIconCount();
 };
 
 window.toggleCart = function () {
@@ -82,10 +130,10 @@ window.checkout = function () {
     cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
-        message += `- ${item.quantity}x ${item.title} ($${item.price.toFixed(2)} c/u)\n`;
+        message += `- ${item.quantity}x ${item.title} (S/. ${item.price.toFixed(2)} c/u)\n`;
     });
 
-    message += `\n*Total a pagar: $${total.toFixed(2)}*\n\n`;
+    message += `\n*Total a pagar: S/. ${total.toFixed(2)}*\n\n`;
 
     if (typeof currentUser !== 'undefined' && currentUser) {
         message += `Mis datos:\nNombre: ${currentUser.name}\nEmail: ${currentUser.email}`;
@@ -112,7 +160,7 @@ function renderCart() {
 
     if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart"><p>Tu carrito está vacío.</p></div>';
-        totalEl.textContent = '$0.00';
+        totalEl.textContent = 'S/. 0.00';
         return;
     }
 
@@ -125,7 +173,7 @@ function renderCart() {
             <img src="${item.image}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1555529771-835f59bfc50c?auto=format&fit=crop&w=600&q=80';">
             <div class="cart-item-details">
                 <h4>${item.title}</h4>
-                <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+                <p class="cart-item-price">S/. ${item.price.toFixed(2)}</p>
                 <div class="cart-item-actions">
                     <button onclick="updateQuantity('${item._id}', 'decrease')">-</button>
                     <span>${item.quantity}</span>
@@ -137,7 +185,7 @@ function renderCart() {
         container.appendChild(itemEl);
     });
 
-    totalEl.textContent = `$${total.toFixed(2)}`;
+    totalEl.textContent = `S/. ${total.toFixed(2)}`;
 }
 
 // Inicializar al cargar el DOM
@@ -157,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="cart-footer">
                     <div class="cart-total">
                         <span>Total:</span>
-                        <span id="cartTotalAmount">$0.00</span>
+                        <span id="cartTotalAmount">S/. 0.00</span>
                     </div>
                     <button class="checkout-btn" onclick="checkout()">Finalizar Compra</button>
                 </div>
