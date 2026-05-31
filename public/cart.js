@@ -14,12 +14,12 @@ function updateCartIconCount() {
 }
 
 // Expone addToCartGlobal para que app.js y product.js lo llamen
-window.addToCartGlobal = function(product) {
+window.addToCartGlobal = function (product) {
     if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
         showAuthModal();
         return;
     }
-    
+
     const existing = cart.find(item => item._id === product._id);
     if (existing) {
         existing.quantity += 1;
@@ -27,7 +27,7 @@ window.addToCartGlobal = function(product) {
         cart.push({ ...product, quantity: 1 });
     }
     saveCart();
-    
+
     // Animar ícono
     const cartIcons = document.querySelectorAll('.cart-icon');
     cartIcons.forEach(icon => {
@@ -36,12 +36,12 @@ window.addToCartGlobal = function(product) {
     });
 };
 
-window.removeFromCart = function(productId) {
+window.removeFromCart = function (productId) {
     cart = cart.filter(item => item._id !== productId);
     saveCart();
 };
 
-window.updateQuantity = function(productId, action) {
+window.updateQuantity = function (productId, action) {
     const item = cart.find(i => i._id === productId);
     if (item) {
         if (action === 'increase') {
@@ -56,7 +56,7 @@ window.updateQuantity = function(productId, action) {
     }
 };
 
-window.toggleCart = function() {
+window.toggleCart = function () {
     const panel = document.getElementById('cartPanel');
     const overlay = document.getElementById('cartOverlay');
     if (panel.classList.contains('open')) {
@@ -70,11 +70,33 @@ window.toggleCart = function() {
     }
 };
 
-window.checkout = function() {
+window.checkout = function () {
     if (cart.length === 0) return;
-    
-    // Acción por defecto: mensaje y limpiar
-    alert("¡Gracias por tu pedido! Nos pondremos en contacto contigo pronto.");
+
+    // Número de WhatsApp del vendedor (Ajusta este número)
+    const phoneNumber = "942889318";
+
+    let message = `¡Hola! Quiero realizar el siguiente pedido:\n\n`;
+    let total = 0;
+
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        message += `- ${item.quantity}x ${item.title} ($${item.price.toFixed(2)} c/u)\n`;
+    });
+
+    message += `\n*Total a pagar: $${total.toFixed(2)}*\n\n`;
+
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        message += `Mis datos:\nNombre: ${currentUser.name}\nEmail: ${currentUser.email}`;
+    }
+
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    // Abrir WhatsApp
+    window.open(whatsappUrl, '_blank');
+
+    // Vaciar carrito
     cart = [];
     saveCart();
     toggleCart();
@@ -83,17 +105,17 @@ window.checkout = function() {
 function renderCart() {
     const container = document.getElementById('cartItemsContainer');
     const totalEl = document.getElementById('cartTotalAmount');
-    
+
     if (!container) return; // Si no hay contenedor (e.g., en panel admin), ignorar
-    
+
     container.innerHTML = '';
-    
+
     if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart"><p>Tu carrito está vacío.</p></div>';
         totalEl.textContent = '$0.00';
         return;
     }
-    
+
     let total = 0;
     cart.forEach(item => {
         total += item.price * item.quantity;
@@ -114,7 +136,7 @@ function renderCart() {
         `;
         container.appendChild(itemEl);
     });
-    
+
     totalEl.textContent = `$${total.toFixed(2)}`;
 }
 
@@ -143,10 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.body.insertAdjacentHTML('beforeend', cartHTML);
     }
-    
+
     updateCartIconCount();
     renderCart();
-    
+
     // Asociar toggleCart a todos los íconos de carrito
     const cartIcons = document.querySelectorAll('.cart-icon');
     cartIcons.forEach(icon => {
