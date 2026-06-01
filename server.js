@@ -285,6 +285,34 @@ app.get('/api/sales', requireAuth, async (req, res) => {
     }
 });
 
+// 13. Validar el carrito antes del checkout
+app.post('/api/cart/validate', verifyToken, async (req, res) => {
+    try {
+        const { cart } = req.body;
+        const invalidItems = [];
+
+        if (!cart || !Array.isArray(cart)) {
+            return res.status(400).json({ error: 'Carrito inválido' });
+        }
+
+        for (const item of cart) {
+            const product = await productsCollection.findOne({ _id: new ObjectId(item._id) });
+            // Si no existe, es que fue eliminado o marcado como vendido por el admin
+            if (!product) {
+                invalidItems.push(item);
+            }
+        }
+
+        if (invalidItems.length > 0) {
+            res.status(400).json({ error: 'Algunos productos ya no están disponibles o fueron vendidos.', invalidItems });
+        } else {
+            res.json({ success: true });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al validar el carrito' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

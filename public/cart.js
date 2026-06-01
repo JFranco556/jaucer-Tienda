@@ -128,8 +128,44 @@ window.toggleCart = function () {
     }
 };
 
-window.checkout = function () {
+window.checkout = async function () {
     if (cart.length === 0) return;
+
+    if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
+        if(typeof showAuthModal === 'function') showAuthModal();
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('jaucer_user_token');
+        const res = await fetch('/api/cart/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ cart })
+        });
+        
+        if (!res.ok) {
+            const data = await res.json();
+            let msg = data.error + "\n\n";
+            if (data.invalidItems && data.invalidItems.length > 0) {
+                msg += "Los siguientes productos han sido removidos de tu carrito:\n";
+                data.invalidItems.forEach(item => {
+                    msg += `- ${item.title}\n`;
+                    cart = cart.filter(c => c._id !== item._id);
+                });
+                alert(msg);
+                saveCart();
+                renderCart();
+            } else {
+                alert(data.error || "Error al validar tu carrito.");
+            }
+            return; // Detener checkout si hay error
+        }
+    } catch(err) {
+        console.error("Error al validar:", err);
+        alert("Error de conexión al validar tu carrito. Por favor, intenta de nuevo.");
+        return;
+    }
 
     // Número de WhatsApp del vendedor (Ajusta este número)
     const phoneNumber = "51942889318";
