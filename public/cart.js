@@ -5,6 +5,16 @@ function saveCart() {
     localStorage.setItem('jaucer_cart', JSON.stringify(cart));
     updateCartIconCount();
     renderCart();
+
+    // Sincronizar con el backend si está autenticado
+    const token = localStorage.getItem('jaucer_user_token');
+    if (token) {
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ cart })
+        }).catch(err => console.error("Error sincronizando carrito:", err));
+    }
 }
 
 function updateCartIconCount() {

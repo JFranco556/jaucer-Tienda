@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas Jaucer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { padding-top: 2rem; }
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .panel {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+        }
+        
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .sales-table th, .sales-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .sales-table th {
+            color: var(--text-muted);
+        }
+        
+        .small-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        
+        <div id="salesDashboard">
+            <div class="dashboard-header">
+                <h2>Ventas Realizadas</h2>
+                <div>
+                    <a href="admin.html" class="btn" style="text-decoration: none; display: inline-block; background: var(--secondary-color); margin-right: 10px;">Volver a Productos</a>
+                    <button class="btn" onclick="logout()" style="background: transparent; border: 1px solid var(--text-muted);">Cerrar Sesión</button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>Historial de Ventas</h3>
+                <br>
+                <div style="overflow-x: auto;">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Imagen</th>
+                                <th>Título</th>
+                                <th>Precio Vendido</th>
+                                <th>Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesList">
+                            <!-- JS inyectará las ventas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <script src="sales.js"></script>
+</body>
+</html>

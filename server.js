@@ -251,6 +251,40 @@ app.post('/api/products/:id/sell', requireAuth, async (req, res) => {
     }
 });
 
+// 10. Obtener carrito del usuario
+app.get('/api/cart', verifyToken, async (req, res) => {
+    try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(req.user.id) });
+        res.json(user.cart || []);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener el carrito' });
+    }
+});
+
+// 11. Actualizar carrito del usuario
+app.post('/api/cart', verifyToken, async (req, res) => {
+    try {
+        const cart = req.body.cart || [];
+        await usersCollection.updateOne(
+            { _id: new ObjectId(req.user.id) },
+            { $set: { cart: cart } }
+        );
+        res.json({ message: 'Carrito actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el carrito' });
+    }
+});
+
+// 12. Obtener todas las ventas (Admin)
+app.get('/api/sales', requireAuth, async (req, res) => {
+    try {
+        const sales = await salesCollection.find({}).sort({ soldAt: -1 }).toArray();
+        res.json(sales);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las ventas' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

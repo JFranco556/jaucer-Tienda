@@ -111,7 +111,7 @@ async function handleRegister(e) {
     btn.disabled = false;
 }
 
-function loginSuccess(token, user) {
+async function loginSuccess(token, user) {
     localStorage.setItem('jaucer_user_token', token);
     localStorage.setItem('jaucer_user', JSON.stringify(user));
     currentToken = token;
@@ -120,6 +120,36 @@ function loginSuccess(token, user) {
     hideAuthModal();
     updateAuthUI();
     
+    // Obtener carrito del servidor
+    try {
+        const res = await fetch('/api/cart', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const serverCart = await res.json();
+            if (serverCart && serverCart.length > 0) {
+                // Fusionar con el carrito local o reemplazar
+                if (typeof cart !== 'undefined') {
+                    // Para simplificar, reemplazamos el carrito local con el del servidor si existe
+                    cart = serverCart;
+                    if (typeof saveCart === 'function') {
+                        // Guardar sin disparar otro fetch (el fetch ya está en saveCart pero no importa mucho, se sincronizará igual)
+                        localStorage.setItem('jaucer_cart', JSON.stringify(cart));
+                        if(typeof updateCartIconCount === 'function') updateCartIconCount();
+                        if(typeof renderCart === 'function') renderCart();
+                    }
+                }
+            } else {
+                // Si el servidor no tiene carrito, le enviamos el local (si tiene)
+                if (typeof saveCart === 'function' && cart && cart.length > 0) {
+                    saveCart();
+                }
+            }
+        }
+    } catch(e) {
+        console.error("Error obteniendo carrito:", e);
+    }
+
     // Si se abrio al querer agregar al carrito, podríamos reintentarlo o mostrar mensaje
     alert(`¡Bienvenido/a, ${user.name}! Ya puedes añadir productos a tu carrito.`);
 }
